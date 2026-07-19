@@ -45,7 +45,7 @@ export class ExportController {
       } else {
         res.send(result.content);
       }
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof NotFoundError) {
         res.status(404).json({ error: error.message });
         return;

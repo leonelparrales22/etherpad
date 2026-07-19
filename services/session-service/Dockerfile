@@ -9,7 +9,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Install dependencies
-RUN npm ci --only=production && \
+RUN npm install --production && \
     npm cache clean --force
 
 # Copy TypeScript and dependencies for build
@@ -17,7 +17,7 @@ COPY tsconfig.json ./
 COPY src ./src
 
 # Install dev dependencies for build
-RUN npm ci && \
+RUN npm install && \
     npm run build
 
 # Stage 2: Runtime
@@ -29,7 +29,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 
 # Install only production dependencies
-RUN npm ci --only=production && \
+RUN npm install --production && \
     npm cache clean --force
 
 # Copy built files from builder

@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(morgan('combined'));
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req: express.Request, res: express.Response) => {
   res.status(200).json({ status: 'ok', service: 'export-service' });
 });
 
@@ -44,7 +44,7 @@ const exportRouter = createExportRouter(exportController);
 app.use('/api/export', exportRouter);
 
 // Error handler
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
   console.error('Error:', err);
   
   if (err instanceof NotFoundError) {
@@ -57,7 +57,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
     return res.status(500).json({ error: 'Database error' });
   }
   
-  res.status(500).json({ error: 'Internal server error' });
+  return res.status(500).json({ error: 'Internal server error' });
 });
 
 // Start server

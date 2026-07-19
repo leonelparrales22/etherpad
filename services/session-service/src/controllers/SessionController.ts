@@ -31,7 +31,7 @@ export class SessionController {
 
       const result = await this.sessionService.createSession(dto);
       res.status(201).json(result);
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof NotFoundError) {
         res.status(404).json({ error: error.message });
         return;
