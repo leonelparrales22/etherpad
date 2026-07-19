@@ -9,6 +9,7 @@ import { AuthorRepository } from './repositories/AuthorRepository';
 import { SessionService } from './services/SessionService';
 import { SessionController } from './controllers/SessionController';
 import { createSessionRouter } from './routes/session.routes';
+import { NotFoundError, ValidationError, DatabaseError } from './errors';
 
 // Load environment variables
 dotenv.config();
@@ -46,9 +47,20 @@ const sessionController = new SessionController(sessionService);
 const sessionRouter = createSessionRouter(sessionController);
 app.use('/api/sessions', sessionRouter);
 
-// Error handler (basic version, will be enhanced in later steps)
+// Error handler
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
+  
+  if (err instanceof NotFoundError) {
+    return res.status(404).json({ error: err.message });
+  }
+  if (err instanceof ValidationError) {
+    return res.status(400).json({ error: err.message });
+  }
+  if (err instanceof DatabaseError) {
+    return res.status(500).json({ error: 'Database error' });
+  }
+  
   res.status(500).json({ error: 'Internal server error' });
 });
 

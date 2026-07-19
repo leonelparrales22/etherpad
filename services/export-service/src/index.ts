@@ -7,6 +7,7 @@ import { PadRepository } from './repositories/PadRepository';
 import { ExportService } from './services/ExportService';
 import { ExportController } from './controllers/ExportController';
 import { createExportRouter } from './routes/export.routes';
+import { NotFoundError, ValidationError, DatabaseError } from './errors';
 
 // Load environment variables
 dotenv.config();
@@ -42,9 +43,20 @@ const exportController = new ExportController(exportService);
 const exportRouter = createExportRouter(exportController);
 app.use('/api/export', exportRouter);
 
-// Error handler (basic version, will be enhanced in later steps)
+// Error handler
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', err);
+  
+  if (err instanceof NotFoundError) {
+    return res.status(404).json({ error: err.message });
+  }
+  if (err instanceof ValidationError) {
+    return res.status(400).json({ error: err.message });
+  }
+  if (err instanceof DatabaseError) {
+    return res.status(500).json({ error: 'Database error' });
+  }
+  
   res.status(500).json({ error: 'Internal server error' });
 });
 

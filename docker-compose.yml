@@ -39,6 +39,8 @@ services:
     restart: always
     ports:
       - "${DOCKER_COMPOSE_APP_PORT_PUBLISHED:-9001}:${DOCKER_COMPOSE_APP_PORT_TARGET:-9001}"
+    networks:
+      - etherpad-network
 
   postgres:
     image: postgres:15-alpine
@@ -55,6 +57,52 @@ services:
     #   - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - etherpad-network
+
+  export-service:
+    build:
+      context: ./services/export-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DOCKER_COMPOSE_POSTGRES_USER:-admin}
+      DB_PASSWORD: "${DOCKER_COMPOSE_POSTGRES_PASSWORD:?Set DOCKER_COMPOSE_POSTGRES_PASSWORD to a strong value}"
+      DB_NAME: ${DOCKER_COMPOSE_POSTGRES_DATABASE:-etherpad}
+      PORT: 3001
+      NODE_ENV: production
+    depends_on:
+      - postgres
+    restart: always
+    networks:
+      - etherpad-network
+
+  session-service:
+    build:
+      context: ./services/session-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DOCKER_COMPOSE_POSTGRES_USER:-admin}
+      DB_PASSWORD: "${DOCKER_COMPOSE_POSTGRES_PASSWORD:?Set DOCKER_COMPOSE_POSTGRES_PASSWORD to a strong value}"
+      DB_NAME: ${DOCKER_COMPOSE_POSTGRES_DATABASE:-etherpad}
+      PORT: 3002
+      NODE_ENV: production
+    depends_on:
+      - postgres
+    restart: always
+    networks:
+      - etherpad-network
+
+networks:
+  etherpad-network:
+    driver: bridge
 
 volumes:
   postgres_data:
