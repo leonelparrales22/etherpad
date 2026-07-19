@@ -12,8 +12,8 @@ export class GroupRepository extends BaseRepository {
    */
   async exists(groupID: string): Promise<boolean> {
     try {
-      return await this.exists(`group:${groupID}`);
-    } catch (error) {
+      return await super.exists(`group:${groupID}`);
+    } catch (error: any) {
       if (error instanceof DatabaseError) {
         throw error;
       }

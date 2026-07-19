@@ -12,8 +12,8 @@ export class AuthorRepository extends BaseRepository {
    */
   async exists(authorID: string): Promise<boolean> {
     try {
-      return await this.exists(`author:${authorID}`);
-    } catch (error) {
+      return await super.exists(`author:${authorID}`);
+    } catch (error: any) {
       if (error instanceof DatabaseError) {
         throw error;
       }
