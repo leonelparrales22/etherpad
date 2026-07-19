@@ -145,8 +145,11 @@ export class SessionRepository extends BaseRepository {
    */
   async addToGroupIndex(groupID: string, sessionID: string): Promise<void> {
     try {
-      await this.setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], 1);
-    } catch (error) {
+      const index = await this.get<SessionIndex>(`group2sessions:${groupID}`);
+      const sessionIDs = index?.sessionIDs || {};
+      sessionIDs[sessionID] = 1;
+      await this.set(`group2sessions:${groupID}`, { sessionIDs });
+    } catch (error: any) {
       if (error instanceof DatabaseError) {
         throw error;
       }
@@ -161,8 +164,12 @@ export class SessionRepository extends BaseRepository {
    */
   async removeFromGroupIndex(groupID: string, sessionID: string): Promise<void> {
     try {
-      await this.setSub(`group2sessions:${groupID}`, ['sessionIDs', sessionID], undefined);
-    } catch (error) {
+      const index = await this.get<SessionIndex>(`group2sessions:${groupID}`);
+      if (index?.sessionIDs) {
+        delete index.sessionIDs[sessionID];
+        await this.set(`group2sessions:${groupID}`, index);
+      }
+    } catch (error: any) {
       if (error instanceof DatabaseError) {
         throw error;
       }
@@ -177,8 +184,11 @@ export class SessionRepository extends BaseRepository {
    */
   async addToAuthorIndex(authorID: string, sessionID: string): Promise<void> {
     try {
-      await this.setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], 1);
-    } catch (error) {
+      const index = await this.get<SessionIndex>(`author2sessions:${authorID}`);
+      const sessionIDs = index?.sessionIDs || {};
+      sessionIDs[sessionID] = 1;
+      await this.set(`author2sessions:${authorID}`, { sessionIDs });
+    } catch (error: any) {
       if (error instanceof DatabaseError) {
         throw error;
       }
@@ -193,8 +203,12 @@ export class SessionRepository extends BaseRepository {
    */
   async removeFromAuthorIndex(authorID: string, sessionID: string): Promise<void> {
     try {
-      await this.setSub(`author2sessions:${authorID}`, ['sessionIDs', sessionID], undefined);
-    } catch (error) {
+      const index = await this.get<SessionIndex>(`author2sessions:${authorID}`);
+      if (index?.sessionIDs) {
+        delete index.sessionIDs[sessionID];
+        await this.set(`author2sessions:${authorID}`, index);
+      }
+    } catch (error: any) {
       if (error instanceof DatabaseError) {
         throw error;
       }
