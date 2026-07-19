@@ -1,4 +1,4 @@
-import { Pool, PoolClient } from 'pg';
+import { Pool } from 'pg';
 import { DatabaseError } from '../errors';
 
 /**
@@ -26,7 +26,7 @@ export abstract class BaseRepository {
       }
 
       return result.rows[0].value as T;
-    } catch (error) {
+    } catch (error: any) {
       throw new DatabaseError(`Failed to get value: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       client.release();
@@ -105,9 +105,6 @@ export abstract class BaseRepository {
     const client = await this.pool.connect();
     
     try {
-      // Build the JSONB path for PostgreSQL
-      const pathArray = path.map((p) => `'${p}'`);
-      
       if (value === undefined) {
         // Delete the property
         await client.query(

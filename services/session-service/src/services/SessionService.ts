@@ -63,7 +63,7 @@ export class SessionService {
       ]);
 
       return { sessionID };
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof DatabaseError) {
         throw error;
       }

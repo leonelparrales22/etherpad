@@ -16,13 +16,12 @@ export class ExportService {
 
   constructor(private padRepository: PadRepository) {
     // Initialize with real generators
-    this.generators = new Map([
-      ['txt', new TxtGenerator()],
-      ['html', new HtmlGenerator()],
-      ['etherpad', new EtherpadGenerator()],
-      ['pdf', new PdfGenerator()],
-      ['docx', new DocxGenerator()],
-    ]);
+    this.generators = new Map<ExportType, ExportGenerator>();
+    this.generators.set('txt', new TxtGenerator());
+    this.generators.set('html', new HtmlGenerator());
+    this.generators.set('etherpad', new EtherpadGenerator());
+    this.generators.set('pdf', new PdfGenerator());
+    this.generators.set('docx', new DocxGenerator());
   }
 
   /**

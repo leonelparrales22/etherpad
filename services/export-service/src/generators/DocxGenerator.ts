@@ -1,6 +1,6 @@
 import { ExportGenerator } from './ExportGenerator';
 import { PadContent } from '../types/export.types';
-import * as htmlDocx from 'html-to-docx';
+import htmlDocx from 'html-to-docx';
 
 /**
  * DOCX generator - converts HTML to DOCX using html-to-docx

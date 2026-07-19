@@ -1,4 +1,4 @@
-import { Pool, PoolClient } from 'pg';
+import { Pool } from 'pg';
 import { NotFoundError, DatabaseError } from '../errors';
 import { PadContent, RevisionContent } from '../types/export.types';
 
@@ -38,7 +38,7 @@ export class PadRepository {
       }
 
       return result.rows[0].value as PadContent | RevisionContent;
-    } catch (error) {
+    } catch (error: any) {
       if (error instanceof NotFoundError) {
         throw error;
       }
