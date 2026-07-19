@@ -1,41 +1,12 @@
 import { PadRepository } from '../repositories/PadRepository';
 import { ExportRequestDto, ExportResult, ExportType, PadContent } from '../types/export.types';
 import { NotFoundError, ValidationError, DatabaseError } from '../errors';
-
-/**
- * Interface for export generators (to be implemented in Step 7)
- */
-export interface ExportGenerator {
-  generate(padContent: PadContent): Promise<Buffer | string>;
-  getContentType(): string;
-  getFileExtension(): string;
-}
-
-/**
- * Placeholder generator for development
- */
-class PlaceholderGenerator implements ExportGenerator {
-  constructor(private type: ExportType) {}
-
-  async generate(padContent: PadContent): Promise<string> {
-    return `Placeholder export for ${this.type}. Pad content: ${JSON.stringify(padContent).substring(0, 100)}...`;
-  }
-
-  getContentType(): string {
-    const contentTypes: Record<ExportType, string> = {
-      html: 'text/html',
-      txt: 'text/plain',
-      etherpad: 'application/json',
-      pdf: 'application/pdf',
-      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    };
-    return contentTypes[this.type];
-  }
-
-  getFileExtension(): string {
-    return this.type;
-  }
-}
+import { ExportGenerator } from '../generators/ExportGenerator';
+import { TxtGenerator } from '../generators/TxtGenerator';
+import { HtmlGenerator } from '../generators/HtmlGenerator';
+import { EtherpadGenerator } from '../generators/EtherpadGenerator';
+import { PdfGenerator } from '../generators/PdfGenerator';
+import { DocxGenerator } from '../generators/DocxGenerator';
 
 /**
  * Service for handling pad exports
@@ -44,12 +15,14 @@ export class ExportService {
   private generators: Map<ExportType, ExportGenerator>;
 
   constructor(private padRepository: PadRepository) {
-    // Initialize with placeholder generators (will be replaced in Step 7)
-    this.generators = new Map();
-    const exportTypes: ExportType[] = ['html', 'txt', 'etherpad', 'pdf', 'docx'];
-    for (const type of exportTypes) {
-      this.generators.set(type, new PlaceholderGenerator(type));
-    }
+    // Initialize with real generators
+    this.generators = new Map([
+      ['txt', new TxtGenerator()],
+      ['html', new HtmlGenerator()],
+      ['etherpad', new EtherpadGenerator()],
+      ['pdf', new PdfGenerator()],
+      ['docx', new DocxGenerator()],
+    ]);
   }
 
   /**
